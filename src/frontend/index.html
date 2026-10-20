@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C17inator — AXIS C17 VAPIX Display Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <circle cx="6" cy="10" r="1" fill="currentColor"/>
+            <circle cx="10" cy="10" r="1" fill="currentColor"/>
+            <circle cx="14" cy="10" r="1" fill="currentColor"/>
+            <circle cx="18" cy="10" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="header-titles">
+          <h1>C17<span class="gradient-text">inator</span></h1>
+          <span class="subtitle">AXIS C17 Network Display VAPIX Controller</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="connection-status" id="connectionStatus">
+          <span class="status-indicator" id="statusDot"></span>
+          <span class="status-text" id="statusText">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dual-Column Workspace -->
+    <main class="app-main">
+      <!-- Left Column: Controls & Configuration -->
+      <section class="config-column">
+
+        <!-- Card 1: Connection & Authentication -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <h2>Device Connection</h2>
+            </div>
+            <button class="btn-ghost-sm" id="testConnBtn" title="Test ping / appearance endpoint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+              <span>Test Ping</span>
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label for="ipInput">C17 IP Address / Hostname</label>
+              <div class="input-with-addons">
+                <select id="protocolSelect" class="protocol-select" title="Protocol">
+                  <option value="http">http://</option>
+                  <option value="https">https://</option>
+                </select>
+                <input type="text" id="ipInput" placeholder="192.168.1.100" spellcheck="false" autocomplete="on">
+                <input type="text" id="portInput" class="port-input" placeholder="Port" title="Port (optional, default 80/443)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="userInput">Username</label>
+              <input type="text" id="userInput" value="root" placeholder="root" spellcheck="false">
+            </div>
+
+            <div class="form-group">
+              <label for="passInput">Password</label>
+              <div class="input-with-button">
+                <input type="password" id="passInput" placeholder="Device password" spellcheck="false">
+                <button type="button" class="btn-icon" id="togglePassBtn" title="Show/Hide Password">
+                  <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Message Content -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <h2>Display Message</h2>
+            </div>
+            <span class="char-counter" id="charCount">0 chars</span>
+          </div>
+
+          <div class="form-group">
+            <textarea id="messageInput" rows="2" placeholder="Enter text to show on C17 display..." spellcheck="false">WELCOME TO AXIS C17</textarea>
+          </div>
+
+          <!-- Quick presets pills -->
+          <div class="quick-messages-row">
+            <span class="quick-label">Samples:</span>
+            <button class="msg-pill" data-msg="WELCOME TO AXIS C17">Welcome</button>
+            <button class="msg-pill" data-msg="ATTENTION: AUTHORIZED PERSONNEL ONLY">Authorized Only</button>
+            <button class="msg-pill" data-msg="EMERGENCY: EVACUATE THE FACILITY">Evacuate</button>
+            <button class="msg-pill" data-msg="QUIET PLEASE: EXAM IN PROGRESS">Quiet Please</button>
+            <button class="msg-pill" data-msg="PROCEED TO GATE 4">Gate 4</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Color & RGB Studio -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="13.5" cy="6.5" r=".5"/>
+                <circle cx="17.5" cy="10.5" r=".5"/>
+                <circle cx="8.5" cy="7.5" r=".5"/>
+                <circle cx="6.5" cy="12.5" r=".5"/>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/>
+              </svg>
+              <h2>Colors (RGB) & Contrast Studio</h2>
+            </div>
+            <button class="btn-ghost-sm" id="swapColorsBtn" title="Swap Text and Background Colors">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+                <polyline points="17 14 12 9 7 14"/>
+                <line x1="12" y1="9" x2="12" y2="21"/>
+              </svg>
+              <span>Swap</span>
+            </button>
+          </div>
+
+          <div class="colors-dual-column">
+            <!-- Text Color Column -->
+            <div class="color-picker-box">
+              <div class="color-box-header">
+                <span class="color-box-title">Text Color (RGB)</span>
+                <span class="hex-badge" id="textHexBadge">#FFFFFF</span>
+              </div>
+              <div class="color-preview-row">
+                <div class="color-swatch-wrapper">
+                  <input type="color" id="textColorPicker" value="#FFFFFF" title="Pick text color">
+                  <div class="swatch-indicator" id="textSwatch"></div>
+                </div>
+                <input type="text" id="textHexInput" class="hex-input" value="#FFFFFF" maxlength="7" spellcheck="false">
+              </div>
+
+              <!-- RGB Numeric & Slider Controls -->
+              <div class="rgb-sliders-group">
+                <div class="rgb-channel-row">
+                  <span class="channel-label red">R</span>
+                  <input type="range" id="textRangeR" min="0" max="255" value="255" class="rgb-slider slider-red">
+                  <input type="number" id="textNumR" min="0" max="255" value="255" class="rgb-num-input">
+                </div>
+                <div class="rgb-channel-row">
+                  <span class="channel-label green">G</span>
+                  <input type="range" id="textRangeG" min="0" max="255" value="255" class="rgb-slider slider-green">
+                  <input type="number" id="textNumG" min="0" max="255" value="255" class="rgb-num-input">
+                </div>
+                <div class="rgb-channel-row">
+                  <span class="channel-label blue">B</span>
+                  <input type="range" id="textRangeB" min="0" max="255" value="255" class="rgb-slider slider-blue">
+                  <input type="number" id="textNumB" min="0" max="255" value="255" class="rgb-num-input">
+                </div>
+              </div>
+            </div>
+
+            <!-- Background Color Column -->
+            <div class="color-picker-box">
+              <div class="color-box-header">
+                <span class="color-box-title">Background Color (RGB)</span>
+                <span class="hex-badge" id="bgHexBadge">#000000</span>
+              </div>
+              <div class="color-preview-row">
+                <div class="color-swatch-wrapper">
+                  <input type="color" id="bgColorPicker" value="#000000" title="Pick background color">
+                  <div class="swatch-indicator" id="bgSwatch"></div>
+                </div>
+                <input type="text" id="bgHexInput" class="hex-input" value="#000000" maxlength="7" spellcheck="false">
+              </div>
+
+              <!-- RGB Numeric & Slider Controls -->
+              <div class="rgb-sliders-group">
+                <div class="rgb-channel-row">
+                  <span class="channel-label red">R</span>
+                  <input type="range" id="bgRangeR" min="0" max="255" value="0" class="rgb-slider slider-red">
+                  <input type="number" id="bgNumR" min="0" max="255" value="0" class="rgb-num-input">
+                </div>
+                <div class="rgb-channel-row">
+                  <span class="channel-label green">G</span>
+                  <input type="range" id="bgRangeG" min="0" max="255" value="0" class="rgb-slider slider-green">
+                  <input type="number" id="bgNumG" min="0" max="255" value="0" class="rgb-num-input">
+                </div>
+                <div class="rgb-channel-row">
+                  <span class="channel-label blue">B</span>
+                  <input type="range" id="bgRangeB" min="0" max="255" value="0" class="rgb-slider slider-blue">
+                  <input type="number" id="bgNumB" min="0" max="255" value="0" class="rgb-num-input">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- High-Contrast Display Presets -->
+          <div class="presets-section">
+            <span class="presets-label">Preset Palettes:</span>
+            <div class="preset-chips">
+              <button class="preset-chip" data-text="#FFFF00" data-bg="#000000" title="Yellow on Black (High Visibility)">
+                <span class="chip-swatch" style="background:#000000; color:#FFFF00;">Aa</span>
+                <span>Amber Gold</span>
+              </button>
+              <button class="preset-chip" data-text="#FFFFFF" data-bg="#000000" title="White on Black (21:1 Maximum)">
+                <span class="chip-swatch" style="background:#000000; color:#FFFFFF;">Aa</span>
+                <span>Monochrome</span>
+              </button>
+              <button class="preset-chip" data-text="#00FF66" data-bg="#000000" title="Green on Black (Terminal/Matrix)">
+                <span class="chip-swatch" style="background:#000000; color:#00FF66;">Aa</span>
+                <span>Signal Green</span>
+              </button>
+              <button class="preset-chip" data-text="#FF2233" data-bg="#000000" title="Red on Black (Alert)">
+                <span class="chip-swatch" style="background:#000000; color:#FF2233;">Aa</span>
+                <span>Alert Red</span>
+              </button>
+              <button class="preset-chip" data-text="#FFFFFF" data-bg="#B91C1C" title="White on Red (Emergency)">
+                <span class="chip-swatch" style="background:#B91C1C; color:#FFFFFF;">Aa</span>
+                <span>Emergency</span>
+              </button>
+              <button class="preset-chip" data-text="#FFFFFF" data-bg="#0A2540" title="White on Deep Blue (Info)">
+                <span class="chip-swatch" style="background:#0A2540; color:#FFFFFF;">Aa</span>
+                <span>Navy Notice</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Display & Motion Options -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <h2>Display & Motion</h2>
+            </div>
+            <div class="mode-segmented-control" id="scrollModeControl">
+              <button type="button" class="mode-btn active" id="modeScrollingBtn">Scrolling</button>
+              <button type="button" class="mode-btn" id="modeStaticBtn">Static</button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="textSizeSelect">Text Size</label>
+              <select id="textSizeSelect">
+                <option value="large" selected>Large</option>
+                <option value="medium">Medium</option>
+                <option value="small">Small</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="directionGroup">
+              <label for="scrollDirSelect">Scroll Direction</label>
+              <select id="scrollDirSelect">
+                <option value="fromRightToLeft" selected>Right to Left (Standard)</option>
+                <option value="fromLeftToRight">Left to Right</option>
+                <option value="fromBottomToTop">Bottom to Top (Vertical)</option>
+              </select>
+            </div>
+
+            <div class="form-group span-2" id="speedGroup">
+              <label for="scrollSpeedInput" id="speedLabel">Scroll Speed (1 - 10): <span id="speedVal">5</span></label>
+              <input type="range" id="scrollSpeedInput" min="1" max="10" value="5" class="speed-slider">
+            </div>
+
+            <div class="form-group span-2">
+              <label for="durationInput">Duration (seconds, 0 = default indefinite)</label>
+              <input type="number" id="durationInput" min="0" max="3600" value="0" placeholder="0 = default indefinite">
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Bar -->
+        <div class="action-buttons-bar">
+          <button class="btn-primary" id="sendBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span id="sendBtnLabel">Send to Display</span>
+          </button>
+
+          <button class="btn-secondary" id="stopBtn" title="Stop ongoing notification on display">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="6" width="12" height="12" rx="1"/>
+            </svg>
+            <span>Stop / Clear</span>
+          </button>
+
+          <button class="btn-icon-labeled" id="copyCurlBtn" title="Copy equivalent cURL command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span>Copy cURL</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Visualizer, Contrast Meter & Live Inspector -->
+      <section class="preview-column">
+
+        <!-- Live Contrast Meter HUD -->
+        <div class="contrast-hud-card">
+          <div class="contrast-hud-top">
+            <div class="contrast-score-block">
+              <span class="hud-eyebrow">Calculated Contrast Ratio</span>
+              <div class="ratio-display">
+                <span class="ratio-number" id="contrastRatio">21.00</span>
+                <span class="ratio-unit">: 1</span>
+              </div>
+            </div>
+
+            <div class="contrast-badge-wrapper">
+              <div class="wcag-overall-badge" id="overallBadge">
+                <span class="badge-icon" id="badgeIcon">✓</span>
+                <span class="badge-grade" id="badgeGrade">AAA Pass</span>
+              </div>
+              <span class="compliance-note" id="complianceNote">Enhanced Accessibility</span>
+            </div>
+          </div>
+
+          <!-- Visual Contrast Progress Bar -->
+          <div class="contrast-gauge-container">
+            <div class="contrast-gauge-bar" id="contrastGauge"></div>
+            <div class="gauge-markers">
+              <span class="marker marker-3">3:1 (Large AA)</span>
+              <span class="marker marker-45">4.5:1 (Normal AA)</span>
+              <span class="marker marker-7">7:1 (AAA)</span>
+            </div>
+          </div>
+
+          <!-- WCAG Compliance Matrix -->
+          <div class="wcag-matrix">
+            <div class="matrix-item" id="tagAaNormal">
+              <span class="check-mark">✓</span>
+              <div class="matrix-text">
+                <strong>WCAG AA</strong>
+                <span>Normal text (≥ 4.5:1)</span>
+              </div>
+            </div>
+            <div class="matrix-item" id="tagAaaNormal">
+              <span class="check-mark">✓</span>
+              <div class="matrix-text">
+                <strong>WCAG AAA</strong>
+                <span>Enhanced (≥ 7.0:1)</span>
+              </div>
+            </div>
+            <div class="matrix-item" id="tagAaLarge">
+              <span class="check-mark">✓</span>
+              <div class="matrix-text">
+                <strong>Large Text AA</strong>
+                <span>Signage (≥ 3.0:1)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Virtual AXIS C17 Hardware Frame & LED Display (Behind Toggle) -->
+        <div class="panel-card simulation-wrapper">
+          <div class="card-header collapsible-trigger" id="simulationToggleHeader">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              <h2>Virtual Screen Preview <span class="tag-experimental">Experimental</span></h2>
+            </div>
+            <label class="control-toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" id="showSimulationToggle">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" id="simulationToggleLabel">Show</span>
+            </label>
+          </div>
+
+          <div class="simulation-content" id="simulationContent" style="display: none;">
+            <div class="hardware-chassis">
+              <div class="chassis-top-bezel">
+                <div class="axis-brand">
+                  <span class="brand-name">AXIS</span>
+                  <span class="brand-model">C17 SERIES</span>
+                </div>
+                <div class="chassis-leds">
+                  <div class="hardware-led power-led" title="Power OK"></div>
+                  <div class="hardware-led net-led" title="Network Activity"></div>
+                </div>
+              </div>
+
+              <!-- The Screen Frame -->
+              <div class="display-bezel">
+                <div class="c17-screen" id="c17Screen">
+                  <!-- Pixel raster grid overlay -->
+                  <div class="pixel-matrix-overlay" id="pixelOverlay"></div>
+
+                  <!-- Content wrapper with marquee capability -->
+                  <div class="screen-content-track" id="screenTrack">
+                    <div class="screen-text" id="screenText">WELCOME TO AXIS C17</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chassis Bottom Bar with Display Status & Matrix Toggle -->
+              <div class="chassis-bottom-bar">
+                <div class="preview-controls">
+                  <span class="preview-mode-tag" id="previewModeTag">Mode: Scrolling (5)</span>
+
+                  <label class="control-toggle">
+                    <input type="checkbox" id="matrixEffectToggle" checked>
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label">LED Grid Effect</span>
+                  </label>
+                </div>
+
+                <span class="speaker-grille-pattern" title="Acoustic speaker grille texture"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live VAPIX Response & Diagnostics Drawer -->
+        <div class="panel-card console-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"/>
+                <line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+              <h2>VAPIX Activity & Response</h2>
+            </div>
+            <div class="console-meta" id="consoleMeta">
+              <span class="meta-item" id="consoleStatus">—</span>
+              <span class="meta-item" id="consoleDuration">—</span>
+            </div>
+          </div>
+
+          <div class="console-body">
+            <div class="console-tab-content" id="consoleOutput">
+              <div class="console-empty-state">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                <span>No VAPIX commands dispatched yet. Ready to send.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Toast Notification Overlay -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

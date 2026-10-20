@@ -1,0 +1,9 @@
+{
+  "$schema": "https://tinyjs.app/schema/tinyjs.schema.json",
+  "name": "c17inator",
+  "title": "C17inator — AXIS C17 VAPIX Display Controller",
+  "size": "1080x740",
+  "id": "com.example.c17inator",
+  "version": "0.1.0",
+  "minTinyjsVersion": "0.57.8"
+}
