@@ -240,7 +240,7 @@ function normalizeTargetUrl({ ip, port, protocol, path }) {
   };
 }
 
-async function performVapixRequest({ urlInfo, method = 'POST', headers = {}, body = null, username, password, timeoutMs = 8000 }) {
+async function performVapixRequest({ urlInfo, method = 'POST', headers = {}, body = null, username, password, timeoutMs = 8000, allowInsecure = true }) {
   const reqHeaders = { ...headers };
   const authModeUsed = [];
 
@@ -263,6 +263,7 @@ async function performVapixRequest({ urlInfo, method = 'POST', headers = {}, bod
       headers: reqHeaders,
       body,
       signal,
+      allowInsecure: !!allowInsecure,
     });
   } catch (err) {
     const durationMs = Date.now() - startTime;
@@ -301,6 +302,7 @@ async function performVapixRequest({ urlInfo, method = 'POST', headers = {}, bod
           headers: retryHeaders,
           body,
           signal: retrySignal,
+          allowInsecure: !!allowInsecure,
         });
       } catch (retryErr) {
         return {
@@ -366,6 +368,7 @@ export const api = {
     scrollSpeed = 5,
     scrollMode = 'scrolling',
     duration = null,
+    allowInsecure = true,
   }) {
     const path = '/config/rest/speaker-display-notification/v1/simple';
     const urlInfo = normalizeTargetUrl({ ip, port, protocol, path });
@@ -411,10 +414,12 @@ export const api = {
       body: bodyStr,
       username,
       password,
+      allowInsecure,
     });
 
     // Generate equivalent curl command for convenience
-    const curlCommand = `curl --request POST \\\n  --anyauth \\\n  --user "${username || 'root'}:${password ? '***' : ''}" \\\n  --header "Content-Type: application/json" \\\n  "${urlInfo.fullUrl}" \\\n  --data '${JSON.stringify(payload, null, 2)}'`;
+    const insecureFlag = (allowInsecure && urlInfo.proto === 'https') ? '  --insecure \\\n' : '';
+    const curlCommand = `curl --request POST \\\n  --anyauth \\\n${insecureFlag}  --user "${username || 'root'}:${password ? '***' : ''}" \\\n  --header "Content-Type: application/json" \\\n  "${urlInfo.fullUrl}" \\\n  --data '${JSON.stringify(payload, null, 2)}'`;
 
     return {
       ...res,
@@ -424,7 +429,7 @@ export const api = {
     };
   },
 
-  async stopVapixNotification({ ip, port, protocol, username, password }) {
+  async stopVapixNotification({ ip, port, protocol, username, password, allowInsecure = true }) {
     const path = '/config/rest/speaker-display-notification/v1/stop';
     const urlInfo = normalizeTargetUrl({ ip, port, protocol, path });
 
@@ -440,9 +445,11 @@ export const api = {
       body: JSON.stringify({}),
       username,
       password,
+      allowInsecure,
     });
 
-    const curlCommand = `curl --request POST \\\n  --anyauth \\\n  --user "${username || 'root'}:${password ? '***' : ''}" \\\n  "${urlInfo.fullUrl}"`;
+    const insecureFlag = (allowInsecure && urlInfo.proto === 'https') ? '  --insecure \\\n' : '';
+    const curlCommand = `curl --request POST \\\n  --anyauth \\\n${insecureFlag}  --user "${username || 'root'}:${password ? '***' : ''}" \\\n  "${urlInfo.fullUrl}"`;
 
     return {
       ...res,
@@ -451,7 +458,7 @@ export const api = {
     };
   },
 
-  async testVapixConnection({ ip, port, protocol, username, password }) {
+  async testVapixConnection({ ip, port, protocol, username, password, allowInsecure = true }) {
     // Try the Speaker Display settings appearance endpoint first, or fallback to basicdeviceinfo
     const path = '/config/rest/speaker-display-settings/v1/appearance';
     const urlInfo = normalizeTargetUrl({ ip, port, protocol, path });
@@ -466,6 +473,7 @@ export const api = {
       headers,
       username,
       password,
+      allowInsecure,
     });
 
     // If 404, try basic device info
@@ -477,6 +485,7 @@ export const api = {
         headers: { 'Accept': '*/*' },
         username,
         password,
+        allowInsecure,
       });
       return {
         ...res,

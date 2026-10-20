@@ -92,6 +92,14 @@
               </div>
             </div>
           </div>
+
+          <div class="connection-options-row">
+            <label class="checkbox-control" title="Allow self-signed or unverified SSL/TLS certificates (adds --insecure)">
+              <input type="checkbox" id="allowInsecureToggle" checked>
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Allow self-signed certificates (skip TLS verification)</span>
+            </label>
+          </div>
         </div>
 
         <!-- Card 2: Message Content -->
@@ -376,68 +384,6 @@
               <div class="matrix-text">
                 <strong>Large Text AA</strong>
                 <span>Signage (≥ 3.0:1)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Virtual AXIS C17 Hardware Frame & LED Display (Behind Toggle) -->
-        <div class="panel-card simulation-wrapper">
-          <div class="card-header collapsible-trigger" id="simulationToggleHeader">
-            <div class="card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-              <h2>Virtual Screen Preview <span class="tag-experimental">Experimental</span></h2>
-            </div>
-            <label class="control-toggle" onclick="event.stopPropagation()">
-              <input type="checkbox" id="showSimulationToggle">
-              <span class="toggle-slider"></span>
-              <span class="toggle-label" id="simulationToggleLabel">Show</span>
-            </label>
-          </div>
-
-          <div class="simulation-content" id="simulationContent" style="display: none;">
-            <div class="hardware-chassis">
-              <div class="chassis-top-bezel">
-                <div class="axis-brand">
-                  <span class="brand-name">AXIS</span>
-                  <span class="brand-model">C17 SERIES</span>
-                </div>
-                <div class="chassis-leds">
-                  <div class="hardware-led power-led" title="Power OK"></div>
-                  <div class="hardware-led net-led" title="Network Activity"></div>
-                </div>
-              </div>
-
-              <!-- The Screen Frame -->
-              <div class="display-bezel">
-                <div class="c17-screen" id="c17Screen">
-                  <!-- Pixel raster grid overlay -->
-                  <div class="pixel-matrix-overlay" id="pixelOverlay"></div>
-
-                  <!-- Content wrapper with marquee capability -->
-                  <div class="screen-content-track" id="screenTrack">
-                    <div class="screen-text" id="screenText">WELCOME TO AXIS C17</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Chassis Bottom Bar with Display Status & Matrix Toggle -->
-              <div class="chassis-bottom-bar">
-                <div class="preview-controls">
-                  <span class="preview-mode-tag" id="previewModeTag">Mode: Scrolling (5)</span>
-
-                  <label class="control-toggle">
-                    <input type="checkbox" id="matrixEffectToggle" checked>
-                    <span class="toggle-slider"></span>
-                    <span class="toggle-label">LED Grid Effect</span>
-                  </label>
-                </div>
-
-                <span class="speaker-grille-pattern" title="Acoustic speaker grille texture"></span>
               </div>
             </div>
           </div>

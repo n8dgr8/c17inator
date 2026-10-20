@@ -62,21 +62,9 @@ const state = {
   scrollDirection: 'fromRightToLeft', // 'fromRightToLeft' | 'fromLeftToRight' | 'fromBottomToTop'
   scrollSpeed: 5,
   duration: 0,
-  showSimulation: false, // Hidden by default behind toggle until verified
+  allowInsecure: true, // Bypass TLS certificate verification for self-signed certs
   lastCurlCommand: '',
 };
-
-// Simulation Preview Visibility Handler
-function updateSimulationVisibility(visible) {
-  state.showSimulation = !!visible;
-  const content = $('simulationContent');
-  const toggle = $('showSimulationToggle');
-  const label = $('simulationToggleLabel');
-  if (content) content.style.display = state.showSimulation ? 'block' : 'none';
-  if (toggle) toggle.checked = state.showSimulation;
-  if (label) label.textContent = state.showSimulation ? 'Hide' : 'Show';
-  persistSettings();
-}
 
 // Toast Notifications
 function showToast(message, type = 'info', duration = 3500) {
@@ -206,54 +194,24 @@ function updateDisplayAndContrast() {
   updateMatrixTag('tagAaaNormal', passesAAANormal);
   updateMatrixTag('tagAaLarge', passesAALarge);
 
-  // Update Virtual Display Screen
-  $('c17Screen').style.backgroundColor = state.bgColor;
-  $('screenText').style.color = state.textColor;
-  $('screenText').textContent = $('messageInput').value || ' ';
-
-  // Font size according to selection
-  const size = $('textSizeSelect').value;
-  if (size === 'small') {
-    $('screenText').style.fontSize = '1.05rem';
-  } else if (size === 'medium') {
-    $('screenText').style.fontSize = '1.25rem';
-  } else {
-    $('screenText').style.fontSize = '1.5rem';
-  }
-
   // Handle Static vs Scrolling Mode
   const isStatic = state.scrollMode === 'static';
-  const track = $('screenTrack');
   const speedGroup = $('speedGroup');
   const directionGroup = $('directionGroup');
   const speedLabel = $('speedLabel');
-  const previewTag = $('previewModeTag');
 
   if (isStatic) {
-    track.className = 'screen-content-track static';
     if (speedGroup) speedGroup.classList.add('disabled');
     if (directionGroup) directionGroup.classList.add('disabled');
     if (speedLabel) speedLabel.textContent = 'Scroll Speed: Static (0 - stationary)';
-    if (previewTag) previewTag.textContent = 'Mode: Static (No scroll)';
   } else {
     const dir = $('scrollDirSelect').value || 'fromRightToLeft';
     state.scrollDirection = dir;
-    track.className = `screen-content-track marquee ${dir}`;
     if (speedGroup) speedGroup.classList.remove('disabled');
     if (directionGroup) directionGroup.classList.remove('disabled');
 
     const speed = Number($('scrollSpeedInput').value) || 5;
     if (speedLabel) speedLabel.innerHTML = `Scroll Speed (1 - 10): <span id="speedVal">${speed}</span>`;
-
-    const animDuration = Math.max(2.5, 20 - speed * 1.7);
-    $('screenText').style.animationDuration = `${animDuration}s`;
-
-    const dirLabels = {
-      'fromRightToLeft': 'Right to Left',
-      'fromLeftToRight': 'Left to Right',
-      'fromBottomToTop': 'Bottom to Top',
-    };
-    if (previewTag) previewTag.textContent = `Mode: Scrolling (${speed} · ${dirLabels[dir] || dir})`;
   }
 
   persistSettings();
@@ -317,7 +275,7 @@ async function persistSettings() {
     scrollDirection: $('scrollDirSelect').value,
     scrollSpeed: $('scrollSpeedInput').value,
     duration: $('durationInput').value,
-    showSimulation: state.showSimulation,
+    allowInsecure: $('allowInsecureToggle') ? $('allowInsecureToggle').checked : true,
   };
 
   try {
@@ -362,15 +320,12 @@ async function loadPersistedSettings() {
       setScrollMode(data.scrollMode);
     }
     if (data.duration != null) $('durationInput').value = data.duration;
-    if (data.showSimulation !== undefined) {
-      updateSimulationVisibility(data.showSimulation);
-    } else {
-      updateSimulationVisibility(false);
+    if (data.allowInsecure !== undefined && $('allowInsecureToggle')) {
+      $('allowInsecureToggle').checked = !!data.allowInsecure;
+      state.allowInsecure = !!data.allowInsecure;
     }
     if (data.textColor) updateTextColor(data.textColor);
     if (data.bgColor) updateBgColor(data.bgColor);
-  } else {
-    updateSimulationVisibility(false);
   }
 }
 
@@ -498,24 +453,12 @@ function setupEventListeners() {
   $('protocolSelect').addEventListener('change', persistSettings);
   $('userInput').addEventListener('input', persistSettings);
 
-  // LED Grid overlay toggle
-  $('matrixEffectToggle').addEventListener('change', (e) => {
-    if (e.target.checked) {
-      $('pixelOverlay').classList.remove('hidden');
-    } else {
-      $('pixelOverlay').classList.add('hidden');
-    }
-  });
-
-  // Simulation display visibility toggle
-  $('showSimulationToggle').addEventListener('change', (e) => {
-    updateSimulationVisibility(e.target.checked);
-  });
-
-  $('simulationToggleHeader').addEventListener('click', (e) => {
-    if (e.target.closest('.control-toggle')) return;
-    updateSimulationVisibility(!state.showSimulation);
-  });
+  if ($('allowInsecureToggle')) {
+    $('allowInsecureToggle').addEventListener('change', (e) => {
+      state.allowInsecure = e.target.checked;
+      persistSettings();
+    });
+  }
 
   // Action: SEND to Display
   $('sendBtn').addEventListener('click', handleSendNotification);
@@ -576,6 +519,7 @@ async function handleSendNotification() {
     scrollDirection: $('scrollDirSelect').value,
     scrollSpeed: isStatic ? 0 : (Number($('scrollSpeedInput').value) || 5),
     duration: Number($('durationInput').value) || 0,
+    allowInsecure: $('allowInsecureToggle') ? $('allowInsecureToggle').checked : true,
   };
 
   try {
@@ -637,6 +581,7 @@ async function handleStopNotification() {
     protocol: $('protocolSelect').value,
     username: $('userInput').value.trim(),
     password: $('passInput').value,
+    allowInsecure: $('allowInsecureToggle') ? $('allowInsecureToggle').checked : true,
   };
 
   try {
@@ -688,6 +633,7 @@ async function handleTestConnection() {
     protocol: $('protocolSelect').value,
     username: $('userInput').value.trim(),
     password: $('passInput').value,
+    allowInsecure: $('allowInsecureToggle') ? $('allowInsecureToggle').checked : true,
   };
 
   try {
@@ -744,7 +690,9 @@ async function handleCopyCurl() {
       payloadData.duration = { type: 'time', value: Math.round(durSec * 1000) };
     }
     const payload = { data: payloadData };
-    cmd = `curl --request POST \\\n  --anyauth \\\n  --user "${user}:${pass}" \\\n  --header "Content-Type: application/json" \\\n  "${proto}://${ip}${portSuffix}/config/rest/speaker-display-notification/v1/simple" \\\n  --data '${JSON.stringify(payload, null, 2)}'`;
+    const allowInsecure = $('allowInsecureToggle') ? $('allowInsecureToggle').checked : true;
+    const insecureFlag = (proto === 'https' && allowInsecure) ? '  --insecure \\\n' : '';
+    cmd = `curl --request POST \\\n  --anyauth \\\n${insecureFlag}  --user "${user}:${pass}" \\\n  --header "Content-Type: application/json" \\\n  "${proto}://${ip}${portSuffix}/config/rest/speaker-display-notification/v1/simple" \\\n  --data '${JSON.stringify(payload, null, 2)}'`;
   }
 
   try {
