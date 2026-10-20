@@ -385,6 +385,20 @@ function setupEventListeners() {
     });
   });
 
+  // Enable mousewheel adjustments on RGB number inputs (0-255)
+  document.querySelectorAll('.rgb-num-input').forEach((input) => {
+    input.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const step = e.deltaY < 0 ? 1 : -1;
+      const current = Number(input.value) || 0;
+      const next = Math.max(0, Math.min(255, current + step));
+      if (next !== current) {
+        input.value = next;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, { passive: false });
+  });
+
   // Swap Colors
   $('swapColorsBtn').addEventListener('click', () => {
     const tempText = state.textColor;

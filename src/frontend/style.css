@@ -567,11 +567,22 @@ textarea {
 .slider-blue::-webkit-slider-thumb { background: #60a5fa; }
 
 .rgb-num-input {
-  width: 44px;
+  width: 58px;
+  min-width: 58px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 3px 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 6px;
   text-align: center;
+  flex-shrink: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rgb-num-input::-webkit-outer-spin-button,
+.rgb-num-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Presets section */
